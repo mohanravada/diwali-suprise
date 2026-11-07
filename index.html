@@ -368,7 +368,7 @@
   </video>
   <div class="story-overlay"></div>
 </section>
-<section id="finalScene" class="scene final-scene"><div class="stars"></div><div class="final-content"><div class="final-kicker">A little light, a little wish</div><div class="final-divider"></div><h2 class="final-title">Happy Diwali,<br>Pavani ♡</h2><div class="final-line">May this Diwali burn all your tensions<br>with crackers and bring lots of happiness<br>and fulfill all your dreams.</div><div class="final-name">With warm wishes,<br>Mohan</div><div class="tiny">ALWAYS KEEP SMILING😊❤️</div><button class="letter-open" id="letterOpen" type="button">✉ &nbsp; One last little thing</button></div><div class="letter-backdrop" id="letterBackdrop" aria-hidden="true"><div class="letter-card"><button class="letter-close" id="letterClose" type="button" aria-label="Close letter">×</button><div class="letter-seal">✦</div><div class="letter-label">A little note for you</div><div class="letter-heading">Dear Pavani(My ChatGPT♡),</div><p id="letterMessage">This might sound a bit funny, but for some reason, I really want to tell you this: Whatever hardships or sorrows you may face in life, I will be there for you. It might sound like a line from a movie, but I mean it quite seriously—whenever you go through something so painful that you feel you cannot share it with anyone else, please remember that I am there for you.</p><div class="letter-sign">— Mohan😁💖</div></div></div></section>
+<section id="finalScene" class="scene final-scene"><div class="stars"></div><div class="final-content"><div class="final-kicker">A little light, a little wish</div><div class="final-divider"></div><h2 class="final-title">Happy Diwali,<br>Pavani ♡</h2><div class="final-line">May your days be filled with light,<br>your dreams find their way,<br>and your smile shine through every season.</div><div class="final-name">With warm wishes,<br>Mohan</div><div class="tiny">LET YOUR LIGHT ALWAYS SHINE</div><button class="letter-open" id="letterOpen" type="button">✉ &nbsp; One last little thing</button></div><div class="letter-backdrop" id="letterBackdrop" aria-hidden="true"><div class="letter-card"><button class="letter-close" id="letterClose" type="button" aria-label="Close letter">×</button><div class="letter-seal">✦</div><div class="letter-label">A little note for you</div><div class="letter-heading">Dear Pavani,</div><p id="letterMessage">This might sound a bit funny, but for some reason, I really want to tell you this: Whatever hardships or sorrows you may face in life, I will be there for you. It might sound like a line from a movie, but I mean it quite seriously—whenever you go through something so painful that you feel you cannot share it with anyone else, please remember that I am there for you.</p><div class="letter-sign">— Mohan ♡</div></div></div></section>
 <audio id="storyMusic" preload="auto"><source src="story-music.mp3" type="audio/mpeg"></audio>
 
 <script>
@@ -417,6 +417,29 @@ setTimeout(finishOpening,4300);
 const secret='1314316';let entered='';let codeLocked=false;const dots=[...document.querySelectorAll('.dot')];function paint(){dots.forEach((d,i)=>d.classList.toggle('filled',i<entered.length))}function input(n){if(codeLocked||entered.length>=7)return;entered+=n;paint();if(entered.length===7){if(entered===secret){codeLocked=true;$('codeWrap').classList.add('success');$('hint').textContent='You found our little secret! ♡';setTimeout(()=>{show('diyaScene');$('codeWrap').classList.remove('success');entered='';paint();$('hint').textContent='';codeLocked=false;},1150)}else{$('codeWrap').classList.remove('shake');void $('codeWrap').offsetWidth;$('codeWrap').classList.add('shake');$('hint').textContent='Oops! That is not our special number. Try once more ♡';setTimeout(()=>{entered='';paint();$('hint').textContent=' '},1050)}}}function back(){if(codeLocked)return;entered=entered.slice(0,-1);paint();$('hint').textContent=' '}document.querySelectorAll('.key').forEach(b=>{b.addEventListener('pointerdown',()=>{b.classList.remove('touch-sparkle');void b.offsetWidth;b.classList.add('touch-sparkle');clearTimeout(b._sparkleTimer);b._sparkleTimer=setTimeout(()=>b.classList.remove('touch-sparkle'),650);if(b.dataset.num!==undefined&&'vibrate' in navigator){try{navigator.vibrate(14)}catch(_){}}});b.addEventListener('pointerup',e=>{e.preventDefault();if(b.dataset.num!==undefined)input(b.dataset.num);if(b.dataset.action==='back')back()})});document.addEventListener('keydown',e=>{if(!$('codeScene').classList.contains('active'))return;if(/^\d$/.test(e.key))input(e.key);if(e.key==='Backspace')back()});
 let diyaLit=false;
 
+// A soft, warm bell chime synthesized locally (no external audio file needed).
+let diyaAudioContext;
+function playDiyaTouchSound(){
+  try{
+    const AudioCtx=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtx)return;
+    diyaAudioContext=diyaAudioContext||new AudioCtx();
+    if(diyaAudioContext.state==='suspended')diyaAudioContext.resume();
+    const now=diyaAudioContext.currentTime;
+    [[740,0,0.42],[1110,0.045,0.58],[1480,0.09,0.34]].forEach(([frequency,delay,duration])=>{
+      const oscillator=diyaAudioContext.createOscillator();
+      const gain=diyaAudioContext.createGain();
+      oscillator.type='sine';
+      oscillator.frequency.setValueAtTime(frequency,now+delay);
+      gain.gain.setValueAtTime(0.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(0.075,now+delay+0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001,now+delay+duration);
+      oscillator.connect(gain);gain.connect(diyaAudioContext.destination);
+      oscillator.start(now+delay);oscillator.stop(now+delay+duration+0.02);
+    });
+  }catch(_){/* Sound is optional on browsers that block Web Audio. */}
+}
+
 
 const letterBackdrop=$('letterBackdrop');
 $('letterOpen').addEventListener('click',()=>{letterBackdrop.classList.add('open');letterBackdrop.setAttribute('aria-hidden','false');});
@@ -460,6 +483,9 @@ storyVideo.addEventListener('error',()=>{
 $('diyaButton').addEventListener('pointerup',e=>{
   e.preventDefault();
   if(diyaLit)return;
+  // Gentle haptic pulse and bell chime on the first touch.
+  if('vibrate' in navigator){try{navigator.vibrate([35,25,55])}catch(_){}}
+  playDiyaTouchSound();
   diyaLit=true;
   const diya=$('diyaScene');
   $('diyaButton').disabled=true;
